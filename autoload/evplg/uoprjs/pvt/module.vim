@@ -6,10 +6,11 @@
 if has("eval")
 
 " inclusion control {{{
-if exists( 'g:evplg_uoprjs_autoload_evplg_uoprjs_pvt_init_loaded' ) || ( exists( 'g:evplg_uoprjs_disable' ) && g:evplg_uoprjs_disable != 0 )
+" prev: if exists( 'g:evplg_uoprjs_autoload_evplg_uoprjs_pvt_module_loaded' ) || ( exists( 'g:evplg_uoprjs_disable' ) && g:evplg_uoprjs_disable != 0 )
+if exists( 'g:evplg_uoprjs_autoload_evplg_uoprjs_pvt_module_loaded' )
 	finish
 endif
-let g:evplg_uoprjs_autoload_evplg_uoprjs_pvt_init_loaded = 1
+let g:evplg_uoprjs_autoload_evplg_uoprjs_pvt_module_loaded = 1
 " }}}
 
 " force "compatibility" mode {{{
@@ -22,8 +23,16 @@ set cpo&vim
 " }}} boiler plate -- prolog
 
 " functionality {{{
-function evplg#uoprjs#pvt#init#CanSource_evplg_uoprjs_modules()
-	return g:evplg_uoprjs_globalsetup_succeeded
+function evplg#uoprjs#pvt#module#ShouldSourceThisModule( module_id, ... ) abort
+	try
+		return evplg#common#module#ShouldSourceThisModule(
+					\		'evplg_uoprjs_' . a:module_id,
+					\		'evplg#uoprjs#pvt#init#CanSource_evplg_uoprjs_modules()',
+					\		a:000
+					\	)
+	catch " catch all
+		return 0
+	endtry
 endfunction
 " }}}
 
@@ -38,7 +47,7 @@ unlet s:cpo_save
 finish
 endif " "eval"
 " compatible mode
-echoerr "the script 'plugin-enabled/autoload/evplg/uoprjs/pvt/init.vim' needs support for the following: eval"
+echoerr "the script 'autoload/evplg/uoprjs/pvt/module.vim' needs support for the following: eval"
 
 " }}} boiler plate -- epilog
 
