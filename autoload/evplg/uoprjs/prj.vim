@@ -24,17 +24,8 @@ endif
 "    'p': look only in the parent project(s) (if any);
 "    default value: 'd'
 "
-" TODO: create function in evlib to get a "flag" value from a set of mutually
-"  exclusive sets. example:
-"  evlib#strflags#GetSetSpecifiedValue( flagsstring, flagsdef_list, (optional) default_value_and_error_value (defaults to an empty string) ) -> string
-"   our call: evlib#strflags#GetSetSpecifiedValue( a:flags, [ 'd', 'a', 'p' ], 'd', '0' )
-"   or: evlib#strflags#GetSetSpecifiedValue( a:flags, 'dap', 'd0' )
-"   note: the function returns the 'error' value ('0' in the example above) if
-"    more than one value in the set was specified;
-"   if more than one value has been specified, and no 'error' value was
-"    specified, then the default value is returned instead (this could be the
-"    empty string if no 'default' value had been specified);
 function evplg#uoprjs#prj#PathnameBelongsToProjectId( pathname, prjid, ... )
+	" ref: evlib#strflags#GetFlagValues( input, allowed, ... )
 	throw 'FIXME: implement: ' . expand( '<sfile>' )
 endfunction
 
@@ -47,6 +38,37 @@ endfunction
 "    'prjids' (list of non-empty strings): project ids (no specified order for now);
 "    (more entries could be present in later versions, too)
 function evplg#uoprjs#prj#GetPathnameProjectInfo( pathname, ... )
+	throw 'FIXME: implement: ' . expand( '<sfile>' )
+endfunction
+
+" note: there may not be a real need for this function, as the "project
+" detection" might be the only thing that we might need at this level for now.
+"
+"  option #1: other modules/user code can then iterate through the results of
+"   evplg#uoprjs#prj#GetPathnameProjectInfo() and act accordingly (in a
+"   "manual" way).
+"
+"  option #2: *this* function gets used to access other dictionary members
+"   that will be associated to the a:prjid, so other modules can use
+"   evplg#uoprjs#prj#RegisterProjectIdDefinition() with the 'a' or 'r' flags
+"   to add their own stuff, possibly even encouraging the users to call that
+"   other module's "register project id" function instead of
+"   evplg#uoprjs#prj#RegisterProjectIdDefinition() (which would then be
+"   described as the "low-level" implementation).
+"
+" args:
+"  prjid;
+"
+"  flags (string, optional): one-character flag identifiers:
+"   validation policy (only one of these can be specified):
+"    'r': [r]equire a:prjid to have been registered;
+"    'o': treat a:prjid as [o]ptional;
+"    default value: 'r'
+"
+" return value:
+"  dictionary (could be empty, if the a:prjid has not been registered, and the
+"  'o' flag has been specified).
+function evplg#uoprjs#prj#GetProjectDictionary( prjid, ... )
 	throw 'FIXME: implement: ' . expand( '<sfile>' )
 endfunction
 
