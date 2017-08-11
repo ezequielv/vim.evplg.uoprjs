@@ -31,6 +31,9 @@ function evplg#uoprjs#pvt#module#ShouldSourceThisModule( module_id, ... ) abort
 					\		( ( a:0 > 0 ) ? a:1 : !0 )
 					\	)
 	catch " catch all
+		" TODO: have a local s:DebugMessage() function that uses evlib if
+		"  possible, and defaults to a home-brewed version otherwise
+		" [debug] echomsg "caught exception: " . v:exception
 		return 0
 	endtry
 endfunction
