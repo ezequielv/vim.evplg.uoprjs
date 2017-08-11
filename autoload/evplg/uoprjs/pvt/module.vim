@@ -28,7 +28,7 @@ function evplg#uoprjs#pvt#module#ShouldSourceThisModule( module_id, ... ) abort
 		return evplg#common#module#ShouldSourceThisModule(
 					\		'evplg_uoprjs_' . a:module_id,
 					\		'evplg#uoprjs#pvt#init#CanSource_evplg_uoprjs_modules()',
-					\		a:000
+					\		( ( a:0 > 0 ) ? a:1 : !0 )
 					\	)
 	catch " catch all
 		return 0
