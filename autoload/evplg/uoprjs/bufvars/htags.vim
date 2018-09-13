@@ -40,11 +40,16 @@ function s:DebugMessage( msg )
 endfunction
 " }}}
 
-function s:SetHTagsDeltaToLtagsChangeCount( delta_value )
-	call evlib#buftagvar#SetTaggedVar(
-				\		g:evplg#uoprjs#bufvars#htags#evlib_buftagvar_key_ltags_chgcount,
-				\		evplg#uoprjs#bufvars#ltags#GetChangeCount() + a:delta_value
-				\	)
+let s:script_local_bufvars_ltags_GetChangeCount = function( 'evplg#uoprjs#bufvars#ltags#GetChangeCount' )
+
+function s:SetHTagsDeltaToLtagsChangeCount( delta_value, ... )
+	let l:taggedvar_key = g:evplg#uoprjs#bufvars#htags#evlib_buftagvar_key_ltags_chgcount
+	let l:taggedvar_val = call( s:script_local_bufvars_ltags_GetChangeCount, a:000 ) + a:delta_value
+	if ( a:0 == 0 )
+		call evlib#buftagvar#SetTaggedVar( l:taggedvar_key, l:taggedvar_val )
+	else
+		call evlib#buftagvar#SetTaggedVar( l:taggedvar_key, l:taggedvar_val, a:1 )
+	endif
 endfunction
 
 function s:SetHTagsDeltaToTagsMappingChangeCount( delta_value )
