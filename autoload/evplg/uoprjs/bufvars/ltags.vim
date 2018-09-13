@@ -29,40 +29,81 @@ endfunction
 
 " ref: function evlib#buftagvar#SetTaggedVar( var_key, var_value )
 
-function evplg#uoprjs#bufvars#ltags#EnsureInit()
-	if ! evlib#buftagvar#HasTaggedVar( g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_chgcount )
-		call evlib#buftagvar#SetTaggedVar( g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_chgcount, 0 )
+function evplg#uoprjs#bufvars#ltags#EnsureInit( ... )
+	let l:var_key = g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_chgcount
+	if !( ( a:0 == 0 ) ? evlib#buftagvar#HasTaggedVar( l:var_key ) : evlib#buftagvar#HasTaggedVar( l:var_key, a:1 ) )
+		let l:var_value = 0
+		" NOTE: almost duplicated code (differs only in passing 'a:1' when needed)
+		if ( a:0 == 0 )
+			call evlib#buftagvar#SetTaggedVar( l:var_key, l:var_value )
+		else
+			call evlib#buftagvar#SetTaggedVar( l:var_key, l:var_value, a:1 )
+		endif
 	endif
 endfunction
 
-function s:InitialiseBufferVars()
-	if ! evlib#buftagvar#HasTaggedVar( g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_ltags )
+function s:InitialiseBufferVars( ... )
+	let l:var_key = g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_ltags
+	if !( ( a:0 == 0 ) ? evlib#buftagvar#HasTaggedVar( l:var_key ) : evlib#buftagvar#HasTaggedVar( l:var_key, a:1 ) )
+		let l:var_value = evlib#strset#Create()
+		" NOTE: almost duplicated code (differs only in passing 'a:1' when needed)
+		if ( a:0 == 0 )
+			call evplg#uoprjs#bufvars#ltags#EnsureInit()
+			call evlib#buftagvar#SetTaggedVar( l:var_key, l:var_value )
+		else
+			call evplg#uoprjs#bufvars#ltags#EnsureInit( a:1 )
+			call evlib#buftagvar#SetTaggedVar( l:var_key, l:var_value, a:1 )
+		endif
+	endif
+endfunction
+
+function s:IncrementChangeCount( ... )
+	let l:var_key = g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_chgcount
+	let l:var_delta = 1
+	" NOTE: almost duplicated code (differs only in passing 'a:1' when needed)
+	if ( a:0 == 0 )
+		call evlib#buftagvar#SetTaggedVar(
+					\		l:var_key,
+					\		evplg#uoprjs#bufvars#ltags#GetChangeCount() + l:var_delta
+					\	)
+	else
+		call evlib#buftagvar#SetTaggedVar(
+					\		l:var_key,
+					\		evplg#uoprjs#bufvars#ltags#GetChangeCount( a:1 ) + l:var_delta,
+					\		a:1
+					\	)
+	endif
+endfunction
+
+function s:GetTagsInstance( ... )
+	let l:var_key = g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_ltags
+	" NOTE: almost duplicated code (differs only in passing 'a:1' when needed)
+	if ( a:0 == 0 )
+		call s:InitialiseBufferVars()
+		" get instance variable (reference)
+		return evlib#buftagvar#GetTaggedVar( l:var_key )
+	else
+		call s:InitialiseBufferVars( a:1 )
+		" get instance variable (reference)
+		return evlib#buftagvar#GetTaggedVar( l:var_key, a:1 )
+	endif
+endfunction
+
+function evplg#uoprjs#bufvars#ltags#GetChangeCount( ... )
+	let l:var_key = g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_chgcount
+	" NOTE: almost duplicated code (differs only in passing 'a:1' when needed)
+	if ( a:0 == 0 )
 		call evplg#uoprjs#bufvars#ltags#EnsureInit()
-		call evlib#buftagvar#SetTaggedVar( g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_ltags, evlib#strset#Create() )
+		return evlib#buftagvar#GetTaggedVar( l:var_key )
+	else
+		call evplg#uoprjs#bufvars#ltags#EnsureInit( a:1 )
+		return evlib#buftagvar#GetTaggedVar( l:var_key, a:1 )
 	endif
 endfunction
 
-function s:IncrementChangeCount()
-	call evlib#buftagvar#SetTaggedVar(
-				\		g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_chgcount,
-				\		evplg#uoprjs#bufvars#ltags#GetChangeCount() + 1
-				\	)
-endfunction
+" FIXME: add support for the 'a:1' for the bufnr() ('...') to every appopriate function
 
-function s:GetTagsInstance()
-	call s:InitialiseBufferVars()
-	" get instance variable (reference)
-	return evlib#buftagvar#GetTaggedVar( g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_ltags )
-endfunction
-
-function evplg#uoprjs#bufvars#ltags#GetChangeCount()
-	call evplg#uoprjs#bufvars#ltags#EnsureInit()
-	return evlib#buftagvar#GetTaggedVar(
-				\		g:evplg#uoprjs#bufvars#ltags#evlib_buftagvar_key_chgcount
-				\	)
-endfunction
-
-function evplg#uoprjs#bufvars#ltags#AddTags( a_tag_or_tags )
+function evplg#uoprjs#bufvars#ltags#AddTags( a_tag_or_tags, ... )
 	" get instance variable (reference)
 	let l:tags_instance = s:GetTagsInstance()
 	call s:IncrementChangeCount()
